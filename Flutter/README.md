@@ -45,3 +45,49 @@ class Myapp extends StatelessWidget {
     }
 }
 ```
+
+Toda app creada con Flutter tiene como pieza básica los Widgets, estos son funciones que dibujan ciertos componentes especificos en pantalla y que pueden ser modificados o configurados mediante argumentos que les pasemos, por ejemplo:
+
+```dart
+Text('Hola mundo')
+```
+
+En este caso el Widget `Text` recibe como argumento el texto que queremos mostrar en pantalla, pero también podemos pasarle otros argumentos como el color, el tamaño, etc.
+
+Un Widget básico y escencial es el `Scaffold`, este es el que nos permite crear una pantalla con un AppBar y un cuerpo, el cual puede ser cualquier otro Widget.
+
+```dart
+import 'package:flutter/material.dart';
+
+class CounterScreen extends StatelessWidget {
+  const CounterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Counter'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              '10',
+              style: TextStyle(fontSize: 160, fontWeight: FontWeight.w100),
+            ),
+            Text(
+              'Clicks',
+              style: TextStyle(fontSize: 25),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.plus_one),
+      ),
+    );
+  }
+}
+```
