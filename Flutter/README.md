@@ -91,3 +91,86 @@ class CounterScreen extends StatelessWidget {
   }
 }
 ```
+
+## El estado de un Widget
+
+El estado de un Widget es la información que este contiene, por ejemplo, el texto que contiene un `Text` o el color de un `Container`. El estado de un Widget puede ser mutable o inmutablel, podemos tener estados globales o locales, etc.
+
+Los Widget `Stateful` permiten tener un estado interno y ciclo de vida como su inicialización y destrucción.
+
+```dart
+@override
+State<CounterScreen> createState() => _CounterScreenState();
+```
+
+De esta forma declaramos un estado, por supuesto tenemos que cambiar el Widget a uno Stateless.
+
+Declaramos un contador de clicks:
+
+```dart
+int clickCounter = 0;
+```
+
+Y cada vez que presionemos el botón actualizamos el estado para ver los cambios en este reflejados es la pantalla.
+
+```dart
+floatingActionButton: FloatingActionButton(
+  onPressed: () {
+    setState(() {
+      clickCounter++;
+    });
+  },
+  child: const Icon(Icons.plus_one),
+),
+```
+
+Así se veria la pantalla completa nueva:
+
+```dart
+import 'package:flutter/material.dart';
+
+class CounterScreen extends StatefulWidget {
+  const CounterScreen({super.key});
+
+  @override
+  State<CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  int clickCounter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Counter'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$clickCounter',
+              style:
+                  const TextStyle(fontSize: 160, fontWeight: FontWeight.w100),
+            ),
+            const Text(
+              'Clicks',
+              style: TextStyle(fontSize: 25),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            clickCounter++;
+          });
+        },
+        child: const Icon(Icons.plus_one),
+      ),
+    );
+  }
+}
+```
+
