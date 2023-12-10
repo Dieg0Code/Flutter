@@ -448,3 +448,344 @@ class MyApp extends StatelessWidget {
   }
 }
 ```
+
+### Stack
+
+El widget ``Stack`` se utiliza para apilar varios widgets uno encima del otro. Cada widget en un Stack ocupa toda el área disponible, y los widgets secundarios pueden superponerse.
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Ejemplo de Stack'),
+        ),
+        body: Stack(
+          children: [
+            Container(
+              color: Colors.blue,
+              height: 300,
+              width: 300,
+            ),
+            Positioned(
+              top: 50,
+              left: 50,
+              child: Container(
+                color: Colors.red,
+                height: 100,
+                width: 100,
+              ),
+            ),
+            Positioned(
+              bottom: 50,
+              right: 50,
+              child: Container(
+                color: Colors.green,
+                height: 150,
+                width: 150,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+En este ejemplo, hemos utilizado un ``Stack`` con tres ``Container`` superpuestos. Aquí algunas cosas a destacar:
+
+1. `Stack`: Contiene una lista de widgets secundarios que se superponen.
+2. `Positioned`: Es utilizado para posicionar de manera específica un widget dentro del ``Stack``. Puedes establecer las coordenadas superior, inferior, izquierda y derecha para controlar la posición del widget.
+
+Recuerda que el orden en que colocas los widgets dentro del Stack determina cómo se superponen. Los widgets más cercanos al principio de la lista estarán en la parte inferior y los más cercanos al final estarán en la parte superior.
+
+### Scaffold
+
+El widget ``Scaffold`` proporciona una estructura visual básica para una aplicación. Es comúnmente utilizado como el elemento principal de la interfaz de usuario de la aplicación y contiene varios widgets como ``AppBar``, ``Drawer``, ``BottomNavigationBar``, y más. Aquí hay un ejemplo básico:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Mi App con Scaffold'),
+        ),
+        body: Center(
+          child: Text('¡Hola, Mundo!'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Acción cuando se presiona el botón flotante
+          },
+          child: Icon(Icons.add),
+        ),
+      ),
+    );
+  }
+}
+```
+
+En este ejemplo:
+
+1. `Scaffold`: Contiene la estructura principal de la aplicación y envuelve otros elementos como ``AppBar``, ``body``, y ``floatingActionButton``.
+2. `AppBar`: Es la barra superior que muestra el título de la aplicación.
+3. `body`: Es el área principal donde colocas el contenido de la aplicación.
+4. `floatingActionButton`: Es un botón flotante que generalmente se utiliza para acciones principales en la aplicación.
+
+Estos son solo algunos de los elementos que puedes incluir en un ``Scaffold``. Dependiendo de tus necesidades, también puedes agregar un ``Drawer`` para un menú lateral, una ``BottomNavigationBar`` para navegación inferior, entre otros.
+
+El ``Scaffold`` es una parte esencial en el desarrollo de aplicaciones Flutter y proporciona una estructura coherente para las aplicaciones móviles.
+
+### SafeArea
+
+El widget ``SafeArea`` es utilizado para garantizar que el contenido de tu aplicación no se vea obstruido por áreas seguras del dispositivo, como la barra de estado o la barra de navegación. Aquí tienes un ejemplo básico:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Ejemplo de SafeArea'),
+        ),
+        body: SafeArea(
+          child: Center(
+            child: Text('¡Hola, Mundo!'),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+En este ejemplo, hemos envuelto el contenido de ``Scaffold`` con el widget ``SafeArea``. Esto asegura que el texto "¡Hola, Mundo!" no se coloque debajo de la barra de estado o cualquier área segura en el dispositivo.
+
+``SafeArea`` es especialmente útil cuando trabajas con dispositivos con muescas (notches) o barras de navegación en la parte inferior, ya que garantiza que tu contenido sea visible y no se vea cortado por estas áreas.
+
+Puedes personalizar aún más ``SafeArea`` ajustando propiedades como ``top``, ``bottom``, ``left``, y ``right`` según tus necesidades. Por ejemplo:
+
+```dart
+SafeArea(
+  top: false, // evita el espacio seguro en la parte superior
+  bottom: true, // deja espacio seguro en la parte inferior
+  child: YourContentWidget(),
+)
+```
+
+Esto es útil cuando quieres controlar en qué áreas específicas del dispositivo deseas que ``SafeArea`` tenga efecto.
+
+### SingleChildScrollView 
+
+El widget ``SingleChildScrollView`` es utilizado para envolver un conjunto de widgets y permitir el desplazamiento vertical cuando el contenido es más grande que el área visible. Aquí tienes un ejemplo básico:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Ejemplo de SingleChildScrollView'),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+              20,
+              (index) => Container(
+                height: 100,
+                width: double.infinity,
+                color: index % 2 == 0 ? Colors.blue : Colors.green,
+                child: Center(
+                  child: Text('Elemento $index'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+En este ejemplo, hemos utilizado ``SingleChildScrollView`` para envolver una ``Column`` que contiene una lista generada de contenedores. La propiedad ``child`` de ``SingleChildScrollView`` puede contener cualquier widget que necesite ser desplazable.
+
+Alguna cosas a destacar:
+
+1. `child`: Especifica el widget que será desplazable. En este caso, es una ``Column`` con una lista de contenedores.
+2. `List.generate`: Es utilizado para generar una lista de contenedores. En este ejemplo, generamos 20 contenedores con diferentes colores.
+
+Recuerda que el ``SingleChildScrollView`` es útil cuando tienes mucho contenido que no cabe en la pantalla y necesitas permitir que el usuario lo desplace para verlo todo.
+
+### ListView
+
+El widget ``ListView`` en Flutter se utiliza para mostrar una lista de widgets, generalmente en una disposición vertical, y permite al usuario desplazarse a través de la lista. Aquí tienes un ejemplo básico de cómo se usa ``ListView``:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Ejemplo de ListView'),
+        ),
+        body: ListView(
+          children: List.generate(
+            20,
+            (index) => ListTile(
+              title: Text('Elemento $index'),
+              onTap: () {
+                // Acción al tocar un elemento
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+En este ejemplo, hemos utilizado un ``ListView`` que contiene una lista de ``ListTile`` generados dinámicamente. Cada ``ListTile`` representa un elemento de la lista. Aquí hay algunas cosas a tener en cuenta:
+
+1. `children`: Especifica la lista de widgets que se mostrarán en el ``ListView``. En este caso, usamos ``List.generate`` para generar dinámicamente una lista de ``ListTile``.``
+2. `onTap`: Se utiliza en el ``ListTile`` para definir una acción que se realizará cuando el usuario toque un elemento de la lista. Puedes personalizar esto según tus necesidades.
+
+El ``ListView`` es especialmente útil cuando tienes una lista de elementos y quieres que el usuario pueda desplazarse a través de ellos. También es eficiente en cuanto a recursos, ya que solo carga en la memoria los elementos visibles en la pantalla.
+
+### Fuentes personalizadas
+
+
+En Flutter, puedes utilizar fuentes personalizadas para darle un aspecto único y distintivo a tu aplicación. Aquí te muestro los pasos básicos para agregar fuentes personalizadas a tu proyecto:
+
+#### Obtener fuentes personalizadas
+
+Primero, asegúrate de tener el archivo de la fuente en tu proyecto. Puedes obtener fuentes personalizadas de diversos recursos en línea o diseñarlas tú mismo.
+
+#### Agregar la fuente al proyecto
+
+Coloca el archivo de la fuente en una carpeta dentro de tu proyecto. Puedes crear una carpeta, por ejemplo, llamada "fonts" en el directorio raíz de tu proyecto.
+
+#### Actualizar el archivo pubspec.yaml
+
+Abre el archivo ``pubspec.yaml`` y agrega la siguiente configuración para incluir la fuente en tu proyecto:
+
+```yaml
+flutter:
+  fonts:
+    - family: MiFuentePersonalizada
+      fonts:
+        - asset: fonts/MiFuentePersonalizada-Regular.ttf
+```
+
+Asegúrate de reemplazar "MiFuentePersonalizada" con el nombre de tu fuente y "MiFuentePersonalizada-Regular.ttf" con la ruta relativa del archivo de tu fuente.
+
+#### Reiniciar la aplicación
+
+Después de agregar la configuración en ``pubspec.yaml``, recarga tu proyecto Flutter. Puedes hacer esto ejecutando ``flutter pub get`` en la terminal o utilizando la opción de recarga en tu IDE.
+
+#### Usar la fuente en tu aplicación
+
+Ahora puedes utilizar la fuente personalizada en tu aplicación. Puedes aplicarla a un ``TextStyle`` en un widget ``Text``, por ejemplo:
+
+```dart
+Text(
+  'Hola, Mundo!',
+  style: TextStyle(
+    fontFamily: 'MiFuentePersonalizada',
+    fontSize: 24.0,
+  ),
+)
+```
+
+Recuerda ajustar el nombre de la fuente según lo que hayas especificado en tu archivo ``pubspec.yaml``.
+
+Con estos pasos, deberías poder agregar y utilizar fuentes personalizadas en tu aplicación Flutter.
+
+### Iconos
+
+En Flutter, puedes utilizar iconos para mejorar la apariencia de tu aplicación. Flutter incluye un conjunto de iconos predefinidos que puedes utilizar, y también te permite usar iconos personalizados. Aquí hay una guía básica sobre cómo trabajar con iconos en Flutter:
+
+#### Iconos Predefinidos
+
+Flutter incluye un conjunto de iconos predefinidos proporcionados por el paquete `Icons`. Puedes utilizarlo directamente en tus Widgets. Aquí un ejemplo:
+
+```dart
+Icon(Icons.star, color: Colors.yellow, size: 48.0),
+```
+
+Este ejemplo muestra un icono de estrella con un color amarillo y un tamaño de 48 píxeles.
+
+#### Paquete flutter_launcher_icons
+
+Si necesitas más iconos o deseas utilizar un conjunto de iconos personalizados, puedes usar el paquete ``flutter_launcher_icons`` para personalizar los iconos de la aplicación. Este paquete te permite especificar los iconos de la aplicación para diferentes plataformas y tamaños.
+
+#### Iconos Personalizados
+
+Puedes utilizar tus propios iconos personalizados. Asegúrate de tener los archivos de tus iconos (por ejemplo, en formato SVG) y convertirlos a un formato compatible con Flutter.
+
+```dart
+Icon(
+  IconData(0xe800, fontFamily: 'MiIconoPersonalizado'),
+  color: Colors.blue,
+  size: 32.0,
+),
+```
+
+En este ejemplo, ``0xe800`` es el código unicode de tu icono personalizado, y ``'MiIconoPersonalizado'`` es el nombre de la fuente que contiene el icono.
+
+#### Paquete flutter_icons
+
+Otro paquete útil es ``flutter_icons``. Este paquete te permite personalizar los iconos de tu aplicación para diferentes plataformas y tamaños, de manera similar a ``flutter_launcher_icons``.
+
+#### Uso de IconData para Iconos Personalizados
+
+Puedes utilizar el constructor ``IconData`` para crear tus propios iconos personalizados. Aquí hay un ejemplo:
+
+```dart
+Icon(
+  IconData(0xe801, fontFamily: 'MiIconoPersonalizado'),
+  color: Colors.red,
+  size: 24.0,
+),
+```
+
+Recuerda ajustar los valores según tus necesidades y la configuración de tu aplicación.
