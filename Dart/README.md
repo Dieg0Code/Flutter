@@ -150,6 +150,42 @@ int addTwoNumbersOptional(int a, [int b = 0]) {
 
 De esta forma establecemos que el valor por defecto de b será 0.
 
+Las funciones en Dart suelen comenzar con el tipo de dato que van a retornar, en caso de que no retornen nada, se usa la palabra reservada `void`. Es comun encontrar funciones como `int Sumar()`, `String saludar()`, etc. Similar a C#.
+
+Cuando no especificamos el tipo de dato de retorno Dart infiere que sera de tipo `dynamic`.
+
+### Argumentos por nombre
+
+Los argumentos por nombre nos permiten pasar parametros a una función de una manera mas clara, por ejemplo:
+
+```dart
+void saludar({String nombre = 'sin nombre', String apellido = 'sin apellido'}) {
+  print('Hola $nombre $apellido');
+}
+```
+
+De esta forma podemos llamar a la función de la siguiente manera:
+
+```dart
+saludar(nombre: 'Diego', apellido: 'Obando');
+
+```
+
+Tambien podemos convinar argumentos posicionales con argumentos por nombre.
+
+```dart
+void saludar(String nombre, {String apellido = 'sin apellido'}) {
+  print('Hola $nombre $apellido');
+}
+```
+
+De esta forma podemos llamar a la función de la siguiente manera:
+
+```dart
+saludar('Diego', apellido: 'Obando');
+```
+En donde el argumento `nombre` es un argumento posicional por tanto obligatorio y el argumento `apellido` es un argumento por nombre el cual es opcional. 
+
 ## Clases y objetos
 
 ```dart
@@ -220,6 +256,13 @@ class Hero {
 }
 ```
 
+Los constructores con nombre nos permiten crear multiples constructores para una clase, por ejemplo, en el ejemplo anterior tenemos dos constructores, uno que recibe dos parametros y otro que recibe un mapa. Para ponerle un nombre a un construcxtor escribimos el nombre de la clase seguido de un punto y el nombre del constructor.
+
+```dart
+final wolverine = Hero(name: 'Logan', power: 'Regeneración');
+final wolverine2 = Hero.fromJson({ 'name': 'Logan', 'power': 'Regeneración' });
+```
+
 ## Getters y Setters
 
 ```dart
@@ -250,8 +293,11 @@ class Square {
     _side = value;
   }
 }
-
 ```
+
+Para declarar un getter usamos la palabra reservada `get` seguido del nombre del getter, en este caso `area`. Los getters nos permiten obtener el valor de una variable privada.
+
+Con los setters podemos modificar el valor de una variable privada, para declarar un setter usamos la palabra reservada `set` seguido del nombre del setter, en este caso `side`.
 
 ## Aserciones
 
