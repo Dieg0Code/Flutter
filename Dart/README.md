@@ -256,7 +256,7 @@ class Hero {
 }
 ```
 
-Los constructores con nombre nos permiten crear multiples constructores para una clase, por ejemplo, en el ejemplo anterior tenemos dos constructores, uno que recibe dos parametros y otro que recibe un mapa. Para ponerle un nombre a un construcxtor escribimos el nombre de la clase seguido de un punto y el nombre del constructor.
+Los constructores con nombre nos permiten crear multiples constructores para una clase, por ejemplo, en el ejemplo anterior tenemos dos constructores, uno que recibe dos parametros y otro que recibe un mapa. Para ponerle un nombre a un constructor escribimos el nombre de la clase seguido de un punto y el nombre del constructor.
 
 ```dart
 final wolverine = Hero(name: 'Logan', power: 'Regeneración');
@@ -298,6 +298,169 @@ class Square {
 Para declarar un getter usamos la palabra reservada `get` seguido del nombre del getter, en este caso `area`. Los getters nos permiten obtener el valor de una variable privada.
 
 Con los setters podemos modificar el valor de una variable privada, para declarar un setter usamos la palabra reservada `set` seguido del nombre del setter, en este caso `side`.
+
+### Propiedades Finales
+
+Las propiedades finales solo pueden ser asignadas una vez.
+
+```dart
+void main() {
+
+  final mySquare = Square(side: 10.0);
+
+  print(mySquare.area);
+
+}
+
+class Square {
+  final double _side; // El guion bajo es una convención para indicar que la variable es privada
+
+  Square({ required double side }): _side = side;
+
+
+  double get area {
+    return _side * _side;
+  }
+
+}
+```
+
+En este ejemplo no podemos declarar un setter por ejemplo, ya que la propiedad `_side` es final.
+
+### Constructores constantes
+
+Los constructores constantes nos permiten crear objetos que no pueden ser modificados.
+
+```dart
+void main() {
+
+  final mySquare = Square(side: 10.0);
+
+  print(mySquare.area);
+
+}
+
+class Square {
+  final double _side; // El guion bajo es una convención para indicar que la variable es privada
+
+  const Square({ required double side }): _side = side;
+}
+
+```
+
+Cuando creamos un objeto con un constructor constante todos apuntan a la misma referencia en memoria.
+
+### Factory constructors
+
+Los factory constructors devuelven una nueva instancia de la clase o una preexistente, puede ser usado para crear objetos de una manera mas eficiente.
+
+```dart
+class Rectangulo {
+
+  int base;
+  int altura;
+  int area;
+  String tipo; // cuadrado base = altura, rectangulo base != altura
+
+  factory Rectangulo(int base, int altura) {
+    if (base == altura) {
+      return Rectangulo.cuadrado(base);
+    } else {
+      return Rectangulo.rectangulo(base, altura);
+    }
+
+  }
+
+  Rectangulo.cuadrado(int base) {
+    this.base = base;
+    this.altura = base;
+    this.area = base * base;
+    this.tipo = 'Cuadrado';
+  }
+
+  Rectangulo.rectangulo(int base, int altura) {
+    this.base = base;
+    this.altura = altura;
+    this.area = base * altura;
+    this.tipo = 'Rectangulo';
+  }
+
+  @override
+  String toString() {
+    return { 'base': base, 'altura': altura, 'area': area, 'tipo': tipo }.toString();
+  }
+}
+
+main() {
+
+  final figura = new Rectangulo(10, 10);
+
+  print(figura);
+
+}
+```
+
+Estos constructores son muy utiles cuando queremos crear objetos de una manera mas eficiente, nos permiten definir una logica para crear objetos de una manera mas eficiente, pudiendo escoger que constructor usar dependiendo de ciertas condiciones.
+
+Un factory por si solo no crea una instancia, puede devolver uno atravez de otro constructor o puede devolver una instancia preexistente.
+
+### Propiedades y métodos estáticos
+
+Las propiedades y metodos estaticos son propiedades y metodos que pertenecen a la clase y no a la instancia de la clase.
+
+```dart
+class Herramientas {
+
+  static const List<String> listado = ['Martillo', 'Llave inglesa', 'Desarmador'];
+
+  static void imprimirListado() => listado.forEach(print);
+
+}
+
+main() {
+
+  // Herramientas.listado.add('Tenazas'); // No se puede hacer esto ya que listado es una propiedad estatica
+
+  Herramientas.imprimirListado();
+
+}
+```
+## Patrón Singleton
+
+El patrón singleton nos permite crear una única instancia de una clase. Esto es muy util cuando queremos crear una instancia que maneje cierta informacion y que esta instancia sea accesible desde cualquier parte de la aplicación.
+
+```dart
+class MiServicio {
+
+  static final MiServicio _singleton = new MiServicio._internal();
+
+  factory MiServicio() {
+    return _singleton;
+  }
+
+  MiServicio._internal();
+
+  String url = 'https://abc.com';
+  String key = 'ABC123';
+
+}
+
+main() {
+
+  final spotifyService = new MiServicio();
+  spotifyService.url = 'https://api.spotify.com';
+
+  final spotifyService2 = new MiServicio();
+
+  print(spotifyService == spotifyService2); // true
+
+  print(spotifyService.url);
+  print(spotifyService2.url);
+
+}
+```
+
+
 
 ## Aserciones
 
