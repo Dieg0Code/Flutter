@@ -789,3 +789,493 @@ Icon(
 ```
 
 Recuerda ajustar los valores según tus necesidades y la configuración de tu aplicación.
+
+## Navegación y Diálogos
+
+La navegación entre nos permite movernos entre pantallas y vistas de una app. En Flutter, puedes utilizar el widget ``Navigator`` para gestionar la navegación entre rutas.
+
+```dart
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => SegundaPantalla()),
+);
+```
+
+En este ejemplo, ``Navigator.push`` se utiliza para navegar a una nueva pantalla llamada ``SegundaPantalla``. Puedes personalizar la transición y la animación de la navegación según tus necesidades. Aquí hay un ejemplo de cómo regresar a la pantalla anterior:
+
+```dart
+Navigator.pop(context);
+```
+
+`.pop()` destruye la pantalla actual y regresa a la anterior en el árbol de navegación, hay que tener cuidado con usar esto ya que si no hay una pantalla anterior la aplicación fallará y nos quedaremos con una pantalla en negro. Para evitar esto podemos usar:
+
+```dart
+Navigator.maybePop(context);
+```
+
+Con lo cual prevenimos que si no hay mas pantallas a las que navegar de vuelta no pase nada y no se rompa la app.
+
+### Pasar datos a una pantalla
+
+Muchas veces querremos pasar datos a otras pantallas como emails u otro tipo de datos, una forma de hacer esto es:
+
+```dart
+final route = MaterialPageRoute(
+  builder: (_) => LoginPage(
+    email: faker.internet.email(),
+  ),
+);
+```
+
+o también se pude hacer asi:
+
+```dart
+final = route = MaterialPageRoute(
+  builder: (_) => LoginPage(),
+  settings: RouteSettings(
+    arguments: faker.internet.email(),
+  ),
+);
+```
+
+Para que esta segunda forma funcione debemos usar la clase `ModalRoute` en la pantalla `LoginPage`
+
+```dart
+final modalRoute = ModalRoute.of(context)!;
+final email = modalRoute.settings.arguments as String;
+```
+
+De esta forma estamos capturando el valor que se le paso a esta pantalla en la variable `email`.
+
+Sin embargo usar esta segunda forma es propenso a errores ya que si estamos pasando un dato de tipo `Int` pero en la otra pantalla lo estamos tratando de castear a un `String` nos va a dar errores. Es por esto que es recomendable usar la primera forma.
+
+### popUntil
+
+El método `popUntil` nos permite navegar hacia atrás en la pila de rutas hasta que se cumpla una condición específica. Por ejemplo, si queremos cerrar todas las pantallas y volver a la pantalla de inicio, podemos hacer lo siguiente:
+
+```dart
+Navigator.popUntil(
+  context,
+  (route) {
+    final name = route.settings.name;
+    return name == '/';
+  }
+);
+```
+
+En este caso, estamos cerrando todas las pantallas hasta que llegamos a la pantalla de inicio, que tiene la ruta '/'. Podemos personalizar la condición según nuestras necesidades.
+
+`pushReplacement` es un método que nos permite reemplazar la ruta actual con una nueva ruta, es decir, navegamos a una nueva pantalla y destruimos la anterior. Por ejemplo:
+
+```dart
+Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => NuevaPantalla()),
+);
+```
+
+Con esto si queremos volver a la pantalla anterior no podremos hacerlo ya que la pantalla anterior fue destruida.
+
+### Forma correcta de pasar datos a otra pantalla
+
+La forma correcta de pasar datos a otra pantalla es obtener el dato y guardarlo en una variable antes de pasarlo a la otra pantalla con `MaterialPageRoute`.
+
+```dart
+final email = faker.internet.email();
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => LoginPage(email: email),
+  ),
+);
+```
+
+### Navegación usando nombres de rutas
+
+En lugar de pasar directamente el constructor de la pantalla, puedes definir un mapa de rutas en tu aplicación y navegar utilizando nombres de rutas. Esto puede hacer que tu código sea más legible y mantenible.
+
+```dart
+final routes = {
+  '/': (context) => HomePage(),
+  '/login': (context) => LoginPage(),
+  '/profile': (context) => ProfilePage(),
+};
+
+Navigator.pushNamed(context, '/login');
+```
+
+Este mapa lo podemos definir en el `MaterialApp` en la propiedad `routes`.
+
+```dart
+MaterialApp(
+  routes: {
+    '/': (context) => HomePage(),
+    '/login': (context) => LoginPage(),
+    '/profile': (context) => ProfilePage(),
+  },
+);
+```
+
+Si una ruta tiene un nombre con múltiples palabras lo común es usar guiones medios para separar las palabras, por ejemplo: ``/profile-page``.
+
+Luego podemos navegar a una ruta específica utilizando el método `pushNamed`.
+
+```dart
+Navigator.pushNamed(context, '/login');
+```
+
+También es común y recomendable establecer estas rutas en una clase separada para mantener el código organizado y fácil de mantener, por ejemplo crear un carpeta `routes` y dentro de esta un archivo `app_routes.dart`.
+
+```dart
+class AppRoutes {
+  static const home = '/';
+  static const login = '/login';
+  static const profile = '/profile';
+}
+
+get routes => {
+  AppRoutes.home: (context) => HomePage(),
+  AppRoutes.login: (context) => LoginPage(),
+  AppRoutes.profile: (context) => ProfilePage(),
+};
+```
+
+después importamos este archivo en el archivo principal y lo usamos de la siguiente forma:
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return MaterialApp(
+    routes: AppRoutes.routes,
+  );
+}
+```
+
+### Pasar datos a otra pantalla usando rutas con nombres
+
+Podemos pasar datos a otra pantalla utilizando rutas con nombres de la siguiente forma:
+
+```dart
+Navigator.pushNamed(
+  context,
+  '/login',
+  arguments: email,
+);
+```
+
+El método `pushNamed` acepta un argumento adicional llamado `arguments` que se puede utilizar para pasar datos a la pantalla de destino. Luego, en la pantalla de destino, podemos acceder a estos datos usando el contexto.
+
+```dart
+final email = ModalRoute.of(context)!.settings.arguments as String;
+```
+
+Ese fragmento de código se va a usar muchas veces, por lo que es recomendable crear un método que haga esto por nosotros.
+
+```dart
+Object? getArgument(BuildContext context) {
+  return ModalRoute.of(context)!.settings.arguments;
+}
+```
+
+De esta forma podemos usar este método en cualquier pantalla para obtener los argumentos que se le pasaron.
+
+Un problema con este método es que estamos retornando un `Object` y luego tenemos que castearlo a un tipo específico, lo cual puede ser propenso a errores. Una forma de evitar esto es usar genéricos para controlar el tipo de dato que estamos pasando.
+
+```dart
+T getArgument<T>(BuildContext context) {
+  return ModalRoute.of(context)!.settings.arguments as T;
+}
+```
+
+De esta forma podemos obtener el argumento de la siguiente forma:
+
+```dart
+final email = getArgument<String>(context);
+```
+
+### pushReplacementName
+
+Podemos definir la ruta inicial de nuestra aplicación con el parámetro `initialRoute` en el `MaterialApp`.
+
+```dart
+MaterialApp(
+  initialRoute: '/',
+  routes: {
+    '/': (context) => HomePage(),
+    '/login': (context) => LoginPage(),
+    '/profile': (context) => ProfilePage(),
+  },
+);
+```
+
+Por lo generar cuando inciamos una app nos encontramos con la `splash screen` la cual se suele mostrar al principio de la aplicación, por lo que esta suele ser la `initialRoute`, pero, una vez mostrada esta pantalla no queremos que el usuario pueda volver atrás y volver a ver esta pantalla, para esto podemos usar `pushReplacementName`.
+
+```dart
+Navigator.pushReplacementNamed(context, '/home');
+```
+
+### pushNameAndRemoveUntil
+
+Otra forma de navegar a una pantalla y eliminar todas las pantallas anteriores es utilizando `pushNamedAndRemoveUntil`.
+
+```dart
+Navigator.pushNamedAndRemoveUntil(
+  context,
+  '/home',
+  (route) => false,
+);
+```
+
+En este caso, estamos navegando a la ruta '/home' y eliminando todas las rutas anteriores en la pila de navegación, con esta forma de navegar no se puede volver a las pantallas anteriores.
+
+### Retornar datos de una pantalla
+
+Supongamos que estamos navegando por la aplicación llegamos a una pantalla que contiene algún tipo de dato y después regresamos a una pantalla anterior pero en esta pantalla queremos que se muestre el dato que obtuvimos en la pantalla anterior, para esto podemos usar `pop` y `then`.
+
+```dart
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => SegundaPantalla(),
+  ),
+).then((value) {
+  print('Dato recibido: $value');
+});
+```
+
+En la pantalla que queremos que nos devuelva el dato usamos `pop` y le pasamos el dato que queremos que nos devuelva.
+
+```dart
+Navigator.pop(context, 'Dato de la segunda pantalla');
+```
+
+En un caso mas practico, supongamos que en una pantalla seleccionamos un color y queremos que este color se muestre en la pantalla anterior.
+
+```dart
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ColorPickerScreen(),
+  ),
+).then((color) {
+  setState(() {
+    selectedColor = color;
+  });
+});
+```
+
+En la pantalla de selección de color usamos `pop` para devolver el color seleccionado.
+
+```dart
+Navigator.pop(context, selectedColor);
+```
+
+También en vez de usar `then` podemos usar `async` y `await`.
+
+```dart
+ListTile(
+  onTap: () async {
+    final route = MaterialPageRoute(
+      builder: (_) => ColorPickerScreen(),
+    );
+    final result = await Navigator.push(context, route);
+
+  }
+),
+```
+
+## Diálogos
+
+Los Diálogos son un Widget esencial en las aplicaciones móviles, ya que nos permiten captar la atención del usuario para así mostrarle información importante o solicitar su confirmación antes de realizar una acción. En Flutter, puedes mostrar diálogos utilizando el widget `showDialog`.
+
+```dart
+showDialog(
+  context: context,
+  builder: (context) {
+    return AlertDialog(
+      title: Text('Título del Diálogo'),
+      content: Text('Contenido del Diálogo'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Aceptar'),
+        ),
+      ],
+    );
+  },
+);
+```
+
+Este es un ejemplo básico de cómo mostrar un diálogo en Flutter. El método `showDialog` acepta un `BuildContext` y un `builder` que devuelve el contenido del diálogo. Puedes personalizar el diálogo con diferentes widgets, como `Text`, `TextField`, `FlatButton`, etc.
+
+Este Widget puede recibir varios argumentos para personalizar el diálogo, como `title`, `content`, `actions`, `backgroundColor`, `elevation`, `shape`, entre otros.
+
+Por ejemplo un dialogo para confirmar o negar la acción de borrar un elemento.
+
+```dart	
+showDialog(
+  context: context,
+  builder: (context) {
+    return AlertDialog(
+      title: Text('Eliminar Elemento'),
+      content: Text('¿Estás seguro de que deseas eliminar este elemento?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Eliminar el elemento
+            Navigator.pop(context);
+          },
+          child: Text('Eliminar'),
+        ),
+      ],
+    );
+  },
+);
+```
+
+En donde se muestra un dialogo con un título y un contenido, y dos botones, uno para cancelar y otro para eliminar el elemento, si se presiona el botón de eliminar se elimina el elemento y se cierra el dialogo.
+
+Es común y recomendado que guardemos los diálogos en Widgets independientes para poder reutilizarlos y para que Hot Reload funcione correctamente.
+
+```dart
+class ConfirmDialog extends StatelessWidget {
+  final String title;
+  final String content;
+  final VoidCallback onConfirm;
+
+  const ConfirmDialog({
+    required this.title,
+    required this.content,
+    required this.onConfirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: onConfirm,
+          child: Text('Eliminar'),
+        ),
+      ],
+    );
+  }
+}
+```
+
+De esta forma podemos usar este dialogo en cualquier parte de la aplicación.
+
+```dart
+showDialog(
+  context: context,
+  builder: (context) {
+    return ConfirmDialog(
+      title: 'Eliminar Elemento',
+      content: '¿Estás seguro de que deseas eliminar este elemento?',
+      onConfirm: () {
+        // Eliminar el elemento
+        Navigator.pop(context);
+      },
+    );
+  },
+);
+```
+
+Por lo general vamos a querer retornar datos de nuestros diálogos, como boleanos o cualquier tipo dependiendo de la acción que se realice en el dialogo, para esto podemos usar `Navigator.pop`.
+
+```dart
+Future<bool> showConfirmDialog(BuildContext context) async {
+  final result = await showDialog(
+    context: context,
+    builder: (context) {
+      return ConfirmDialog(
+        title: 'Eliminar Elemento',
+        content: '¿Estás seguro de que deseas eliminar este elemento?',
+        onConfirm: () {
+          Navigator.pop(context, true);
+        },
+      );
+    },
+  );
+
+  return result ?? false;
+}
+```
+
+Como los diálogos esperan a que el usuario haga alguna acción, devuelven un `Future` como tipo de dato, podemos establecer con un genérico el tipo de dato que esperamos que devuelva el dialogo, esto quiere decir también que es una función asíncrona, por lo que podemos usar `async` y `await` para con eso poder capturar el valor que devuelve en alguna variable, en este caso `result`.
+
+Podemos redondear los bordes de un dialogo usando la propiedad `shape` de `AlertDialog`.
+
+```dart
+AlertDialog(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16.0),
+  ),
+);
+```
+
+También podemos modificar el parámetro `barrierColor` para cambiar el color de fondo del dialogo.
+
+```dart
+showDialog(
+  context: context,
+  barrierColor: Colors.black.withOpacity(0.5),
+  builder: (context) {
+    return AlertDialog(
+      title: Text('Título del Diálogo'),
+      content: Text('Contenido del Diálogo'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Aceptar'),
+        ),
+      ],
+    );
+  },
+);
+```
+
+Una opción util también en caso de que queremos que el usuario si o si confirme o deniegue una acción es desactivar la opción de cerrar el dialogo al tocar fuera de este, esto lo podemos configurar dejando en `false` la propiedad `barrierDismissible`.
+
+```dart
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
+    return AlertDialog(
+      title: Text('Título del Diálogo'),
+      content: Text('Contenido del Diálogo'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Aceptar'),
+        ),
+      ],
+    );
+  },
+);
+```
+
+### Cupertino Style Dialogs
+
+IOS tiene un sistema de diseño llamado `Cupertino` el cual es característico de las aplicaciones de Apple, como Flutter nos permite desarrollar aplicaciones multiplataforma podemos usar este estilo de diseño si queremos.
